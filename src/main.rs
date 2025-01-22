@@ -2,14 +2,24 @@ use std::{env, fs};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let filepath = &args[2];
-    let grepped = &args[1];
-    println!("Filepath :{filepath:?}");
+    let config: Config = parse_args(&args);
 
-    println!("ToGrep  :{grepped:?}");
+    println!("Search Query: {}", config.query);
 
-    let file_contents =
-        fs::read_to_string(filepath).expect("File could not be read. Program has panicked!");
+    println!("In file: {}", config.file_path);
+}
 
-    println!("File {filepath} has been opened successfully.");
+struct Config {
+    query: String,
+    file_path: String,
+}
+
+fn parse_args(args: &[String]) -> Config {
+    if args.len() < 2 {
+        panic!("Invalid Arguments")
+    }
+    Config {
+        query: args[1].clone(),
+        file_path: args[2].clone(),
+    }
 }
