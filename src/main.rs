@@ -2,7 +2,9 @@ use std::{env, fs, path::Path};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let config: Config = Config::new(&args).expect("Invalid amount of arguments inputted");
+    let config: Config = Config::new(&args).unwrap_or_else(|x| {
+        panic!("Panic: |Parsing arguments| {x}");
+    });
 
     println!("Search Query: {}", config.query);
     println!("In file: {}", config.file_path);
