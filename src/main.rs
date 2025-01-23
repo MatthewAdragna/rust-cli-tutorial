@@ -1,11 +1,8 @@
-use std::{
-    env, fs,
-    path::{self, Path},
-};
+use std::{env, fs, path::Path};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let config: Config = parse_args(&args);
+    let config: Config = Config::new(&args).expect("Invalid amount of arguments inputted");
 
     println!("Search Query: {}", config.query);
     println!("In file: {}", config.file_path);
@@ -22,6 +19,16 @@ fn main() {
 struct Config {
     query: String,
     file_path: String,
+}
+
+impl Config {
+    fn new(args: &[String]) -> Result<Config, &'static str> {
+        if args.len() < 3 {
+            Err("Invalid Argument Amount")
+        } else {
+            Ok(parse_args(args))
+        }
+    }
 }
 
 fn parse_args(args: &[String]) -> Config {
