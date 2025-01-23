@@ -1,44 +1,51 @@
-use std::{env, fs, path::Path};
+use std::{env, error::Error, fs, path::Path};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let config: Config = Config::new(&args).unwrap_or_else(|x| {
-        panic!("Panic: |Parsing arguments| {x}");
-    });
-
-    println!("Search Query: {}", config.query);
-    println!("In file: {}", config.file_path);
-    let file_path = Path::new(&config.file_path);
-    fs::exists(file_path).expect(" {file_path:?} does not exist!");
-
-    let file_text =
-        fs::read_to_string(file_path).expect("Panic: file could not be converted to text.");
-    for (index, current_matched) in file_text.match_indices(&config.query) {
-        println!("Found {current_matched} @ {index}");
-    }
+    match mini_grep::run(&args) {
+        Err(err) => panic!("Panic: {err:?}"),
+        _ => println!("______SuccessfullOperation_______"),
+    };
 }
 
-struct Config {
-    query: String,
-    file_path: String,
-}
+mod mini_grep {
 
-impl Config {
-    fn new(args: &[String]) -> Result<Config, &'static str> {
-        if args.len() < 3 {
-            Err("Invalid Argument Amount")
-        } else {
-            Ok(parse_args(args))
+    use super::*;
+    pub fn run(args: &[String]) -> Result<(), Box<dyn Error>> {
+        let config: Config = Config::new(args)?;
+
+        println!(
+            "mini_grep started: [Query: {} | Target: {}]",
+            config.query, config.file_path
+        );
+
+        let file_path = Path::new(&config.file_path);
+        fs::exists(file_path)?;
+
+        let file_text = fs::read_to_string(file_path)?;
+
+        for (index, current_matched) in file_text.match_indices(&config.query) {
+            println!("Found {current_matched} @ {index}");
         }
-    }
-}
 
-fn parse_args(args: &[String]) -> Config {
-    if args.len() < 3 {
-        panic!("Invalid Arguments Amount Found, Found {} arguments\n Minimum amount of arguments needed is 2  in form :m{{Query,File_Path}}",args.len()-1);
+        Ok(())
     }
-    Config {
-        query: args[1].clone(),
-        file_path: args[2].clone(),
+
+    struct Config<'a> {
+        query: &'a str,
+        file_path: &'a str,
+    }
+
+    impl<'a> Config<'a> {
+        fn new(args: &'a [String]) -> Result<Config<'a>, &'static str> {
+            if args.len() < 3 {
+                Err("Invalid Argument Amount")
+            } else {
+                Ok(Config {
+                    query: &args[1][..],
+                    file_path: &args[2][..],
+                })
+            }
+        }
     }
 }
