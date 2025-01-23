@@ -1,7 +1,7 @@
 pub mod mini_grep {
 
     use std::{error::Error, fs, path::Path};
-    pub fn run(args: &[String]) -> Result<(), Box<dyn Error>> {
+    pub fn run(args: &[String]) -> Result<Vec<usize>, Box<dyn Error>> {
         let config: Config = Config::new(args)?;
 
         println!(
@@ -13,12 +13,12 @@ pub mod mini_grep {
         fs::exists(file_path)?;
 
         let file_text = fs::read_to_string(file_path)?;
-
-        for (index, current_matched) in file_text.match_indices(&config.query) {
-            println!("Found {current_matched} @ {index}");
+        let mut outputs: Vec<usize> = Vec::new();
+        for (index, _) in file_text.match_indices(&config.query) {
+            outputs.push(index);
         }
 
-        Ok(())
+        Ok(outputs)
     }
 
     struct Config<'a> {
