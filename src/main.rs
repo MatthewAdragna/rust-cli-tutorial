@@ -1,4 +1,7 @@
-use std::{env, fs};
+use std::{
+    env, fs,
+    path::{self, Path},
+};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -6,6 +9,14 @@ fn main() {
 
     println!("Search Query: {}", config.query);
     println!("In file: {}", config.file_path);
+    let file_path = Path::new(&config.file_path);
+    fs::exists(file_path).expect(" {file_path:?} does not exist!");
+
+    let file_text =
+        fs::read_to_string(file_path).expect("Panic: file could not be converted to text.");
+    for (index, current_matched) in file_text.match_indices(&config.query) {
+        println!("Found {current_matched} @ {index}");
+    }
 }
 
 struct Config {
