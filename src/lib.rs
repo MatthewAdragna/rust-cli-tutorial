@@ -42,10 +42,12 @@ pub mod mini_grep {
     }
 
     pub fn grep_string(query: &str, file_text: &str) -> Vec<(usize, String)> {
-        file_text
+        let filter = file_text
             .lines()
             .enumerate()
-            .filter(|(_, linein)| linein.contains(query))
+            .filter(|(_, linein)| linein.contains(query));
+
+        filter
             .map(|(num, slice_in)| (num, String::from(slice_in)))
             .collect()
     }
