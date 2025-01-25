@@ -38,13 +38,16 @@ pub mod mini_grep {
         let file_path = Path::new(config.file_path);
         fs::exists(file_path)?;
         let file_text = fs::read_to_string(file_path)?;
-        let outputs: Vec<(usize, String)> = file_text
+        Ok(grep_string(config.query, &file_text))
+    }
+
+    pub fn grep_string(query: &str, file_text: &str) -> Vec<(usize, String)> {
+        file_text
             .lines()
             .enumerate()
-            .filter(|(_, linein)| linein.contains(config.query))
+            .filter(|(_, linein)| linein.contains(query))
             .map(|(num, slice_in)| (num, String::from(slice_in)))
-            .collect();
-        Ok(outputs)
+            .collect()
     }
 
     struct Config<'a> {
