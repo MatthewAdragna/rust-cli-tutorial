@@ -1,14 +1,14 @@
-use rct::mini_grep::run;
+use rct::mini_grep::run2_rawargs;
 
 use std::env;
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let index_vec = match run(&args) {
+    let index_vec = match run2_rawargs(&args) {
         Err(err) => panic!("Panic: {err:?}"),
         Ok(vec) => vec,
     };
 
-    for index in index_vec {
-        println!("Found at {index}")
+    for (num, line) in index_vec {
+        println!("{num} : {line}");
     }
 }
